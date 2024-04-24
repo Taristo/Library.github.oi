@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Data</h1>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody">
+            <!-- البيانات ستتم إضافتها هنا باستخدام JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // استرجاع البيانات من قاعدة البيانات SQLite وإضافتها إلى الجدول
+        var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+
+        db.transaction(function (tx) {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS userData (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)');
+        });
+
+        db.transaction(function (tx) {
+            tx.executeSql('SELECT * FROM userData', [], function (tx, results) {
+                var len = results.rows.length;
+                var dataBody = document.getElementById('dataBody');
+
+                for (var i = 0; i < len; i++) {
+                    var row = results.rows.item(i);
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = '<td>' + row.name + '</td><td>' + row.age + '</td>';
+                    dataBody.appendChild(newRow);
+                }
+            }, null);
+        });
+    </script>
+</body>
+</html>
